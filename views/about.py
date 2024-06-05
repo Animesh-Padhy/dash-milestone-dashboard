@@ -1,92 +1,137 @@
-import dash
-import dash_table
-import dash_html_components as html
-import json
+from dash import html, dcc, dash_table
 import pandas as pd
-import dash_core_components as dcc
-import dash_bootstrap_components as dbc
-from dash import Input, Output, callback
+import json
 
-with open('core/conf/config_about.json', 'r') as file:
-    tables = json.load(file)
 
-df = pd.read_csv('data/gapminderDataFiveYear.csv')
-df = df[['continent', 'country', 'pop', 'lifeExp']]
+def get_JsonData():
+    file = open("core/conf/config_about.json")
+    json_data = json.load(file)
+    return json_data
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-layout = html.Div(
+dfr = pd.read_csv("data/gapminderDataFiveYear.csv")
+df = dfr[["continent", "country", "pop", "lifeExp"]]
+
+table = dash_table.DataTable(id="table", data=df.to_dict("records"), page_size=15)
+
+pageSize_dropdown = html.Div(
     children=[
-        dbc.Row([html.H2('Introduction to Gapminder')], style={'text-align': 'center'}),
-        dbc.Row([html.P(tables['intro_part1'])]),
-        dbc.Row(
-            [
-                html.Ol(
-                    [
-                        html.Li(tables['intro_part1_list1']),
-                        html.Li(tables['intro_part1_list2']),
-                        html.Li(tables['intro_part1_list3']),
-                        html.Li(tables['intro_part1_list4']),
-                    ]
-                )
-            ]
-        ),
-        dbc.Label('Show number of rows'),
-        row_drop := dcc.Dropdown(value=10, clearable=False, style={'width': '35%'}, options=[{'label': x, 'value': x} for x in [10, 25, 50, 100]]),
-        my_table := dash_table.DataTable(
-            columns=[
-                {'name': 'Continent', 'id': 'continent', 'type': 'text'},
-                {'name': 'Country', 'id': 'country', 'type': 'text'},
-                {'name': 'Population', 'id': 'pop', 'type': 'numeric'},
-                {'name': 'Life Expectancy', 'id': 'lifeExp', 'type': 'numeric'},
-            ],
-            data=df.to_dict('records'),
-            filter_action='native',
-            page_size=10,
-            style_data={
-                'width': '150px', 'minWidth': '150px', 'maxWidth': '150px',
-                'overflow': 'hidden', 'textOverflow': 'ellipsis',
-            }
-        ),
-        dbc.Row([
-            dbc.Col([
-                continent_drop := dcc.Dropdown([x for x in sorted(df.continent.unique())], placeholder='Select Continent')
-            ], width=3),
-            dbc.Col([
-                country_drop := dcc.Dropdown([x for x in sorted(df.country.unique())], multi=True, placeholder='Select Country')
-            ], width=3),
-            dbc.Col([
-                pop_slider := dcc.Slider(0, 1500000000, 5000000, marks={'1000000000': '1 billion', '1500000000': '1.5 billion'}, value=0, tooltip={'placement': 'bottom', 'always_visible': True})
-            ], width=3),
-            dbc.Col([
-                lifeExp_slider := dcc.Slider(0, 100, 1, marks={'100': '100'}, value=20, tooltip={'placement': 'bottom', 'always_visible': True})
-            ], width=3),
-        ], justify='between', className='mt-3 mb-4'),
+        html.Label("Select Page Size"),
+        dcc.Dropdown(options=[10, 15, 20], value=10, id="page_dropdown"),
     ]
 )
 
-@app.callback(
-    Output(my_table, 'data'),
-    Output(my_table, 'page_size'),
-    Input(continent_drop, 'value'),
-    Input(country_drop, 'value'),
-    Input(pop_slider, 'value'),
-    Input(lifeExp_slider, 'value'),
-    Input(row_drop, 'value')
+continent_dropdown = html.Div(
+    children=[
+        dcc.Dropdown(
+            options=df["continent"].unique(),
+            value="",
+            id="continent_dropdown",
+            placeholder="Select Continent",
+        )
+    ]
 )
-def update_dropdown_options(cont_v, country_v, pop_v, life_v, row_v):
-    dff = df.copy()
 
-    if cont_v:
-        dff = dff[dff.continent == cont_v]
-    if country_v:
-        dff = dff[dff.country.isin(country_v)]
+country_dropdown = html.Div(
+    children=[
+        dcc.Dropdown(
+            options=df["country"].unique(),
+            value="",
+            id="country_dropdown",
+            placeholder="Select country",
+        )
+    ]
+)
 
-    dff = dff[(dff['pop'] >= pop_v) & (dff['pop'] < 1500000000)]
-    dff = dff[(dff['lifeExp'] >= life_v) & (dff['lifeExp'] < 100)]
+population_rangeSlider = html.Div(
+    children=[
+        dcc.RangeSlider(
+            min=df["pop"].min(),
+            max=df["pop"].max(),
+            # step=1000000,
+            value=[df["pop"].min(), df["pop"].max()],
+            id="population_slider",
+        )
+    ]
+)
 
-    return dff.to_dict('records'), row_v
+lifeExp_rageSlider = html.Div(
+    children=[
+        dcc.RangeSlider(
+            min=df["lifeExp"].min(),
+            max=df["lifeExp"].max(),
+            # step=1000000,
+            value=[df["lifeExp"].min(), df["lifeExp"].max()],
+            id="lifeExp_slider",
+        )
+    ]
+)
 
-if __name__ == '__main__':
-    app.layout = layout  
-    app.run_server(debug=True)
+about_layout = html.Div(
+    children=[
+        html.H3(children="Introduction to GapMinder", className="intro"),
+        html.Div(
+            children=[
+                html.P(children=get_JsonData()["intro_part1"]),
+                html.Ol(
+                    children=[
+                        html.Li(children=get_JsonData()["intro_part1_list1"]),
+                        html.Li(children=get_JsonData()["intro_part1_list2"]),
+                        html.Li(children=get_JsonData()["intro_part1_list3"]),
+                        html.Li(children=get_JsonData()["intro_part1_list4"]),
+                    ]
+                ),
+            ]
+        ),
+        html.Div(
+            children=[
+                pageSize_dropdown,
+                table,
+                html.Div(
+                    children=[
+                        continent_dropdown,
+                        country_dropdown,
+                        population_rangeSlider,
+                        lifeExp_rageSlider,
+                    ],
+                    className="filters_container",
+                ),
+            ]
+        ),
+        html.Div(
+            children=[
+                html.Button(children="Download CSV", id="download_CSV"),
+                dcc.Download(id="download"),
+            ]
+        ),
+    ]
+)
+
+
+def getUpdatedDataFrame(continent, country, popValue, lifeExpValue):
+    dataFrame = df.copy(deep=True)
+    if not continent and not country and not popValue and not lifeExpValue:
+        return dataFrame.to_dict("records")
+
+    if continent:
+        dataFrame = dataFrame[dataFrame["continent"] == continent]
+
+    if country:
+        dataFrame = dataFrame[dataFrame["country"] == country]
+
+    dataFrame = dataFrame[
+        (popValue[0] <= dataFrame["pop"]) & (dataFrame["pop"] <= popValue[1])
+    ]
+    dataFrame = dataFrame[
+        (lifeExpValue[0] <= dataFrame["lifeExp"])
+        & (dataFrame["lifeExp"] <= lifeExpValue[1])
+    ]
+    return dataFrame
+
+
+def dataFrame():
+    return dfr
+
+
+def aboutlogout():
+    return about_layout
