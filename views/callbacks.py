@@ -1,4 +1,4 @@
-from dash import dcc, Input, Output, callback, State, no_update,html
+from dash import dcc, Input, Output, callback, State, no_update, html
 import dash
 import plotly.express as px
 import json
@@ -10,7 +10,7 @@ from views.about import aboutlogout
 from views.input_field import inputLayout
 from views.simulation import simulationLayout
 from flask_login import current_user, logout_user
-
+from views.authentication import loginLayout, logoutLayout
 
 def updatePageSize():
     @callback(
@@ -19,7 +19,6 @@ def updatePageSize():
     )
     def update_output(value):
         return value
-
 
 def updateTableData():
     @callback(
@@ -32,7 +31,6 @@ def updateTableData():
     def update_output(continent, country, popValue, lifeExpValue):
         return getUpdatedDataFrame(continent, country, popValue, lifeExpValue).to_dict('records')
 
-
 def generateCSV():
     @callback(
         Output("download", "data"),
@@ -40,14 +38,12 @@ def generateCSV():
         [State('continent_dropdown', 'value'),
          State('country_dropdown', 'value'),
          State('population_slider', 'value'),
-         State('lifeExp_slider', 'value'),
-         ],
-        prevent_initial_call=True,)
-    def generate_csv(n_nlicks, continent, country, popValue, lifeExpValue):
-        dataFrame = getUpdatedDataFrame(
-            continent, country, popValue, lifeExpValue)
+         State('lifeExp_slider', 'value')],
+        prevent_initial_call=True,
+    )
+    def generate_csv(n_clicks, continent, country, popValue, lifeExpValue):
+        dataFrame = getUpdatedDataFrame(continent, country, popValue, lifeExpValue)
         return dcc.send_data_frame(dataFrame.to_csv, filename="filtered_data.csv")
-
 
 def storeInSession():
     @callback(
@@ -57,8 +53,7 @@ def storeInSession():
         [State('latitude', 'value'),
          State('longitude', 'value'),
          State('data', 'value'),
-         State('country', 'value'),
-         ],
+         State('country', 'value')],
         prevent_initial_call=True
     )
     def store_data(n_clicks, latitude, longitude, data, country):
@@ -72,7 +67,6 @@ def storeInSession():
         }
         return json.dumps(input_field_Data, indent=4), 'Output Generated'
 
-
 def getStoredData():
     @callback(
         Output('latitude1', 'value'),
@@ -83,9 +77,7 @@ def getStoredData():
     )
     def getStoredData(data):
         res = json.loads(data)
-
         return res['latitude'], res['longitude'], res['data'], res['country']
-
 
 def simulationMap():
     @callback(
@@ -103,7 +95,6 @@ def simulationMap():
         center = [res['latitude'], res['longitude']]
         return [dl.TileLayer(), marker], center
 
-
 def updateSimulationOutput():
     @callback(
         Output('bar-chart', 'figure'),
@@ -111,7 +102,7 @@ def updateSimulationOutput():
         Output('totalgdpSim', 'children'),
         Output('totalpopSim', 'children'),
         Output('avgExpSim', 'children'),
-        Output('headingOfChart','children'),
+        Output('headingOfChart', 'children'),
         Input('session', 'data')
     )
     def update_output(data):
@@ -131,15 +122,13 @@ def updateSimulationOutput():
                       y=actualDataFrame['gdpPercap'], color='country',
                       labels={'gdpPercap': 'GDP Per Capita'})
         a, b, c = calculateCountrySpecificData(df)
-        return fig, fig1, a, b, c,f'GDP per capita Over {isSelected}'
-
+        return fig, fig1, a, b, c, f'GDP per capita Over {isSelected}'
 
 def calculateCountrySpecificData(dataFrame):
     totalgdp = dataFrame['gdpPercap'].max()
     totalPopulation = dataFrame['pop'].max()
     averageLifeExp = dataFrame.loc[:, 'lifeExp'].mean()
     return totalgdp, totalPopulation, averageLifeExp
-
 
 def displayPages():
     @callback(Output('page-content', 'children'),
@@ -148,17 +137,35 @@ def displayPages():
               prevent_initial_call=True)
     def display_page(pathname):
         view = None
-        url = dash.no_update
-        if pathname == "/about":
-            view = aboutlogout()  
-        elif pathname == "/inputField":
-            view = inputLayout()  
-        elif pathname == "/simulation":
-            view = simulationLayout()  
-        else:
-            view = html.Div("Page not found")
+        url = no_update
+        if pathname == '/login':
+            view = loginLayout()
+        elif pathname == '/about':
+            if current_user.is_authenticated:
+                view = aboutlogout()
+            else:
+                view = loginLayout()
+                url = '/login'
+        elif pathname == '/inputField':
+            if current_user.is_authenticated:
+                view = inputLayout()
+            else:
+                view = loginLayout()
+                url = '/login'
+        elif pathname == '/logout':
+            if current_user.is_authenticated:
+                logout_user()
+                view = logoutLayout()
+            else:
+                view = loginLayout()
+                url = '/login'
+        elif pathname == '/simulation':
+            if current_user.is_authenticated:
+                view = simulationLayout()
+            else:
+                view = loginLayout()
+                url = '/login'
         return view, url
-
 
 def allCallbacks():
     updatePageSize()

@@ -4,7 +4,7 @@ import json
 
 
 def get_JsonData():
-    file = open("core/conf/config_about.json")
+    file = open("conf/config_about.json")
     json_data = json.load(file)
     return json_data
 
@@ -24,7 +24,9 @@ pageSize_dropdown = html.Div(
 continent_dropdown = html.Div(
     children=[
         dcc.Dropdown(
-            options=df["continent"].unique(),
+            options=[
+                {"label": cont, "value": cont} for cont in df["continent"].unique()
+            ],
             value="",
             id="continent_dropdown",
             placeholder="Select Continent",
@@ -35,7 +37,10 @@ continent_dropdown = html.Div(
 country_dropdown = html.Div(
     children=[
         dcc.Dropdown(
-            options=df["country"].unique(),
+            options=[
+                {"label": country, "value": country}
+                for country in df["country"].unique()
+            ],
             value="",
             id="country_dropdown",
             placeholder="Select country",
@@ -48,7 +53,6 @@ population_rangeSlider = html.Div(
         dcc.RangeSlider(
             min=df["pop"].min(),
             max=df["pop"].max(),
-            # step=1000000,
             value=[df["pop"].min(), df["pop"].max()],
             id="population_slider",
         )
@@ -60,7 +64,6 @@ lifeExp_rageSlider = html.Div(
         dcc.RangeSlider(
             min=df["lifeExp"].min(),
             max=df["lifeExp"].max(),
-            # step=1000000,
             value=[df["lifeExp"].min(), df["lifeExp"].max()],
             id="lifeExp_slider",
         )
@@ -69,42 +72,85 @@ lifeExp_rageSlider = html.Div(
 
 about_layout = html.Div(
     children=[
-        html.H3(children="Introduction to GapMinder", className="intro"),
+        # Intro 
         html.Div(
             children=[
-                html.P(children=get_JsonData()["intro_part1"]),
-                html.Ol(
-                    children=[
-                        html.Li(children=get_JsonData()["intro_part1_list1"]),
-                        html.Li(children=get_JsonData()["intro_part1_list2"]),
-                        html.Li(children=get_JsonData()["intro_part1_list3"]),
-                        html.Li(children=get_JsonData()["intro_part1_list4"]),
-                    ]
+                html.H3(
+                    children="Introduction to GapMinder",
+                    className="intro-heading",
+                    style={"text-align": "center", "margin": "auto", "width": "60%"},
                 ),
-            ]
-        ),
-        html.Div(
-            children=[
-                pageSize_dropdown,
-                table,
                 html.Div(
                     children=[
-                        continent_dropdown,
-                        country_dropdown,
-                        population_rangeSlider,
-                        lifeExp_rageSlider,
+                        html.P(children=get_JsonData()["intro_part1"]),
+                        html.Ol(
+                            children=[
+                                html.Li(children=get_JsonData()["intro_part1_list1"]),
+                                html.Li(children=get_JsonData()["intro_part1_list2"]),
+                                html.Li(children=get_JsonData()["intro_part1_list3"]),
+                                html.Li(children=get_JsonData()["intro_part1_list4"]),
+                            ],
+                            className="intro-list",
+                        ),
                     ],
-                    className="filters_container",
+                    className="intro-content",
                 ),
-            ]
+            ],
+            className="intro-section",
+            style={"text-align": "left", "margin-left": "1rem", "width": "90%"},
         ),
+        # Page Size Dropdown
+        html.Div(
+            children=[pageSize_dropdown],
+            className="page-size-section",
+        ),
+        # Table
+        html.Div(
+            children=[table],
+            className="table-section",
+            style={"width": "100%"},
+        ),
+        # Filters
         html.Div(
             children=[
-                html.Button(children="Download CSV", id="download_CSV"),
-                dcc.Download(id="download"),
-            ]
+                html.Div(
+                    children=[continent_dropdown],
+                    className="filter-item",
+                    style={"width": "24%", "margin": "0 1%"},
+                ),
+                html.Div(
+                    children=[country_dropdown],
+                    className="filter-item",
+                    style={"width": "24%", "margin": "0 1%"},
+                ),
+                html.Div(
+                    children=[population_rangeSlider],
+                    className="filter-item",
+                    style={"width": "24%", "margin": "0 1%"},
+                ),
+                html.Div(
+                    children=[lifeExp_rageSlider],
+                    className="filter-item",
+                    style={"width": "24%", "margin": "0 1%"},
+                ),
+            ],
+            className="filters-container d-flex",
+            style={"justify-content": "space-between"},
         ),
-    ]
+        # Download Button
+        html.Div(
+            children=[
+                html.Button(
+                    children="Download CSV",
+                    id="download_CSV",
+                    className="btn btn-primary",
+                ),
+                dcc.Download(id="download"),
+            ],
+            className="download-section",
+        ),
+    ],
+    className="about-layout",
 )
 
 
