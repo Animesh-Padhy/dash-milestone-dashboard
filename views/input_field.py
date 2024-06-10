@@ -63,6 +63,12 @@ input_field_layout = html.Div(
                         ),
                     ],
                     className="cont",
+                    style={
+                        "width": "48%",
+                        "display": "inline-block",
+                        "verticalAlign": "top",
+                        "marginRight": "2%",
+                    },
                 ),
                 html.Div(
                     children=[
@@ -70,9 +76,15 @@ input_field_layout = html.Div(
                         html.Div(id="generatedOutput"),
                     ],
                     className="cont",
+                    style={
+                        "width": "48%",
+                        "display": "inline-block",
+                        "verticalAlign": "top",
+                    },
                 ),
             ],
             className="inputFieldContainer",
+            style={"display": "flex", "width": "100%"},
         ),
         html.Div(
             children=[
@@ -83,6 +95,7 @@ input_field_layout = html.Div(
                 )
             ],
             className="simulateButton",
+            style={"textAlign": "center", "marginTop": "20px"},
         ),
     ]
 )

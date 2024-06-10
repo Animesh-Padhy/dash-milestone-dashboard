@@ -24,7 +24,9 @@ simulation_layout = html.Div(
                 html.Div(
                     children=[
                         html.Label(
-                            "User Provided Fields", className="userProvidedField"
+                            "User Provided Fields",
+                            className="userProvidedField",
+                            style={"fontWeight": "bold"},
                         ),
                         html.Div(
                             children=[
@@ -32,85 +34,97 @@ simulation_layout = html.Div(
                                     children=[
                                         html.Div(
                                             children=[
-                                                html.Div(
-                                                    children=[
-                                                        dbc.Label(
-                                                            "Latitude: ",
-                                                            className="header",
-                                                        ),
-                                                        dbc.Input(
-                                                            valid="",
-                                                            id="latitude1",
-                                                            disabled=True,
-                                                        ),
-                                                    ],
-                                                    className="UserInput",
+                                                dbc.Label(
+                                                    "Latitude: ",
+                                                    className="header",
+                                                    style={"fontWeight": "bold"},
                                                 ),
-                                                html.Hr(),
-                                                html.Div(
-                                                    children=[
-                                                        dbc.Label(
-                                                            "Longitude: ",
-                                                            className="header",
-                                                        ),
-                                                        dbc.Input(
-                                                            valid="",
-                                                            id="longitude1",
-                                                            disabled=True,
-                                                        ),
-                                                    ],
-                                                    className="UserInput",
+                                                dbc.Input(
+                                                    valid="",
+                                                    id="latitude1",
+                                                    disabled=True,
                                                 ),
-                                                html.Hr(),
-                                                html.Div(
-                                                    children=[
-                                                        dbc.Label(
-                                                            "Data: ", className="header"
-                                                        ),
-                                                        dbc.Input(
-                                                            valid="",
-                                                            id="data1",
-                                                            disabled=True,
-                                                        ),
-                                                    ],
-                                                    className="UserInput",
-                                                ),
-                                                html.Hr(),
-                                                html.Div(
-                                                    children=[
-                                                        dbc.Label(
-                                                            "Country: ",
-                                                            className="header",
-                                                        ),
-                                                        dbc.Input(
-                                                            valid="",
-                                                            id="country1",
-                                                            disabled=True,
-                                                        ),
-                                                    ],
-                                                    className="UserInput",
-                                                ),
-                                                html.Hr(),
                                             ],
-                                            className="formContainer",
-                                        )
-                                    ]
-                                ),
-                                html.Div(children="Output generated"),
-                            ],
-                            className="inputedFields",
+                                            className="UserInput",
+                                        ),
+                                        html.Hr(),
+                                        html.Div(
+                                            children=[
+                                                dbc.Label(
+                                                    "Longitude: ",
+                                                    className="header",
+                                                    style={"fontWeight": "bold"},
+                                                ),
+                                                dbc.Input(
+                                                    valid="",
+                                                    id="longitude1",
+                                                    disabled=True,
+                                                ),
+                                            ],
+                                            className="UserInput",
+                                        ),
+                                        html.Hr(),
+                                        html.Div(
+                                            children=[
+                                                dbc.Label(
+                                                    "Data: ",
+                                                    className="header",
+                                                    style={"fontWeight": "bold"},
+                                                ),
+                                                dbc.Input(
+                                                    valid="",
+                                                    id="data1",
+                                                    disabled=True,
+                                                ),
+                                            ],
+                                            className="UserInput",
+                                        ),
+                                        html.Hr(),
+                                        html.Div(
+                                            children=[
+                                                dbc.Label(
+                                                    "Country: ",
+                                                    className="header",
+                                                    style={"fontWeight": "bold"},
+                                                ),
+                                                dbc.Input(
+                                                    valid="",
+                                                    id="country1",
+                                                    disabled=True,
+                                                ),
+                                            ],
+                                            className="UserInput",
+                                        ),
+                                        html.Hr(),
+                                    ],
+                                    className="formContainer",
+                                )
+                            ]
                         ),
+                        html.Div(children="Output generated"),
                     ],
-                    style={"width": "100%"},
+                    style={
+                        "width": "50%",
+                        "display": "inline-block",
+                        "verticalAlign": "top",
+                        "margin": "10px",
+                    },
                 ),
                 html.Div(
                     children=[
-                        html.Label("Country Data: ", className="userProvidedField"),
+                        html.Label(
+                            "Country Data: ",
+                            className="userProvidedField",
+                            style={"fontWeight": "bold"},
+                        ),
                         html.Div(
                             children=[
                                 html.Div(
                                     children=[
-                                        html.Label("Total GDP: "),
+                                        html.Label(
+                                            "Total GDP: ",
+                                            style={"fontWeight": "bold"},
+                                        ),
                                         html.Span(id="totalgdpSim"),
                                     ],
                                     className="countryItem",
@@ -118,7 +132,10 @@ simulation_layout = html.Div(
                                 html.Hr(),
                                 html.Div(
                                     children=[
-                                        html.Label("Total Population: "),
+                                        html.Label(
+                                            "Total Population: ",
+                                            style={"fontWeight": "bold"},
+                                        ),
                                         html.Span(id="totalpopSim"),
                                     ],
                                     className="countryItem",
@@ -126,7 +143,10 @@ simulation_layout = html.Div(
                                 html.Hr(),
                                 html.Div(
                                     children=[
-                                        html.Label("Average life Expectancy: "),
+                                        html.Label(
+                                            "Average life Expectancy: ",
+                                            style={"fontWeight": "bold"},
+                                        ),
                                         html.Span(id="avgExpSim"),
                                     ],
                                     className="countryItem",
@@ -136,32 +156,56 @@ simulation_layout = html.Div(
                             className="countryclass",
                         ),
                     ],
-                    style={"width": "50%"},
+                    style={
+                        "width": "40%",
+                        "display": "inline-block",
+                        "verticalAlign": "top",
+                        "margin": "10px",
+                    },
                 ),
             ],
             className="inputandcountry",
+            style={"width": "95%", "margin": "auto", "marginTop": "30px"},
         ),
+        # Bar Chart 
         html.Div(
             children=[
                 html.Label(
                     "Calculated Bar Chart",
                     className="userProvidedField calculatedBarChart",
+                    style={
+                        "fontWeight": "bold",
+                        "fontSize": "20px",
+                        "textAlign": "center",
+                        "display": "block",
+                    },
                 ),
                 html.Div(
-                    children=[dcc.Graph(id="bar-chart")], className="calculatedBarChart"
+                    children=[dcc.Graph(id="bar-chart")],
+                    className="calculatedBarChart",
+                    style={"width": "80%", "margin": "auto"},
                 ),
-            ]
+            ],
+            style={"textAlign": "center", "marginTop": "30px"},
         ),
+        # Country Bar Chart 
         html.Div(
             children=[
                 html.Label(
                     " ",
                     id="headingOfChart",
                     className="userProvidedField calculatedBarChart",
+                    style={
+                        "fontWeight": "bold",
+                        "fontSize": "20px",
+                        "textAlign": "center",
+                        "display": "block",
+                    },
                 ),
                 html.Div(
                     children=[dcc.Graph(id="country-bar-chart")],
                     className="calculatedBarChart",
+                    style={"width": "80%", "margin": "auto"},
                 ),
             ]
         ),
